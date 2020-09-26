@@ -1,18 +1,10 @@
-var uuid = require('uuid');
+const crypto = require('crypto');
 
-var crypto = require('crypto');
-// const virtual_nodes = 8;
+const addresses = process.env.ADDRESSES || "";
 
-// for (let i = 0; i < virtual_nodes; i++) {
-//   var id = hash(uuid.v4());
-//   console.log("id: %f, virtual_nodes: %d", id, i)
-// }
+const identifierIds = addresses.split(" ").map(address => {
+  const hash = crypto.createHash('md5').update(address).digest('hex');
+  return hash;
+}).join(" ");
 
-
-var id = uuid.v4();
-// console.log("id:", id)
-var hash = crypto.createHash('md5').update(id).digest('hex');
-console.log(hash)
-// module.exports(hash) 
-
-// return hash
+console.log(identifierIds)

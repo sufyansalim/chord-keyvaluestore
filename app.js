@@ -4,13 +4,29 @@ var express = require('express');
 const app = express();
 const port = process.env.PORT || 42069;
 
-const id = process.env.ID || 0;
-console.log("id: ", id)
+const neighbors_identified_ids = process.env.NEIGHBORS_IDENTIFIER_IDS || "";
+const neighbors_addresses = process.env.NEIGHBORS_ADDRESSES || "";
+
+console.log("neighbors_identified_ids: ", neighbors_identified_ids)
+console.log("neighbors_addresses: ", neighbors_addresses)
+
+app.get('/neighbors', function (req, res) {
+  const result = neighbors_addresses.split(" ");
+  res.send(result);
+});
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
-app.listen(port, function () {
+var server = app.listen(port, function () {
   console.log(`Example app listening on port ${port}`);
 });
+
+
+setTimeout(() => {
+  server.close(() => {
+    console.log('Closed out remaining connections');
+    process.exit(0);
+  });
+}, 60000);
