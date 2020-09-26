@@ -14,7 +14,7 @@ elif [ "$1" = "demo" ]; then
 LINE=1
 while read -r NODE
   do
-    NODE_ID = $(node initialize_nodes.js)
+    NODE_ID=$(node initialize_nodes.js)
     echo "$NODE_ID"
     echo "$LINE: $NODE"
     # exit
