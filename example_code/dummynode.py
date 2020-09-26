@@ -9,7 +9,6 @@ import threading
 
 from http.server import BaseHTTPRequestHandler,HTTPServer
 
-
 object_store = {}
 neighbors = []
 
