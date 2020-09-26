@@ -12,5 +12,7 @@ var crypto = require('crypto');
 var id = uuid.v4();
 // console.log("id:", id)
 var hash = crypto.createHash('md5').update(id).digest('hex');
-// console.log("hash: ", hash)
-return hash
+console.log(hash)
+// module.exports(hash) 
+
+// return hash

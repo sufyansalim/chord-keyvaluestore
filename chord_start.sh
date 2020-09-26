@@ -17,8 +17,7 @@ while read -r NODE
     NODE_ID=$(node initialize_nodes.js)
     echo "$NODE_ID"
     echo "$LINE: $NODE"
-    # exit
-    # ssh -f $NODE "node /home/ssa169/Distrubuted-System/chord/server.js"
+    ssh -f $NODE "ID=$NODE_ID node /home/kla130/INF-3200-Distributed-Systems/Assignment1/code/app.js"
     # ssh -f $NODE "pwd"
     ((LINE++))
 done < "./hostfile"
