@@ -14,7 +14,8 @@ if [ "$1" = "demo" ]; then
     do
 
       HOSTS[LINE-1]=$NODE
-      PORTS[LINE-1]=$(( ( RANDOM % (65535-49152) ) + 49152 ))
+      # PORTS[LINE-1]=$(( ( RANDOM % (65535-49152) ) + 49152 ))
+      PORTS[LINE-1]=55555
       ADDRESSES[LINE-1]="${NODE}:${PORTS[LINE-1]}"
 
       ((LINE++))
@@ -183,6 +184,11 @@ if [ "$1" = "demo" ]; then
   # echo "SORTED_OBJECT_MAP[0]: ${SORTED_OBJECT_MAP[0]}"
   # echo "SORTED_OBJECT_MAP[1]: ${SORTED_OBJECT_MAP[1]}"
   # echo "SORTED_OBJECT_MAP[2]: ${SORTED_OBJECT_MAP[2]}"
+
+  for i in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
+    echo "SORTED_NODE_IDENTIFIER_IDS[${i}]: ${SORTED_NODE_IDENTIFIER_IDS[i]}"
+    echo "OBJECT_MAP[${i}]: ${OBJECT_MAP[i]}"
+  done
 
 
 

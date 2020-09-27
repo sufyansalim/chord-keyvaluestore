@@ -125,7 +125,9 @@ app.put('/storage/:key', function (req, res) {
         });
         
         // write data to request body
-        _req.write(`{data: ${value}}`);
+        _req.write(JSON.stringify({
+          data: value,
+        }));
         _req.end();
 
         // http.get(`http://${previous_node_address}/storage/${key}`, response => {
@@ -183,7 +185,9 @@ app.put('/storage/:key', function (req, res) {
         });
         
         // write data to request body
-        _req.write(`{data: ${value}}`);
+        _req.write(JSON.stringify({
+          data: value,
+        }));
         _req.end();
 
         // http.get(`http://${next_node_address}/storage/${key}`, response => {
@@ -252,7 +256,9 @@ app.put('/storage/:key', function (req, res) {
         });
         
         // write data to request body
-        _req.write(`{data: ${value}}`);
+        _req.write(JSON.stringify({
+          data: value,
+        }));
         _req.end();
 
         // http.put(`http://${previous_node_address}/storage/${key}`, response => {
@@ -312,7 +318,9 @@ app.put('/storage/:key', function (req, res) {
         });
         
         // write data to request body
-        _req.write(`{data: ${value}}`);
+        _req.write(JSON.stringify({
+          data: value,
+        }));
         _req.end();
 
         // http.get(`http://${next_node_address}/storage/${key}`, response => {
@@ -477,4 +485,4 @@ var server = app.listen(port, function () {
 //     console.log(`Node ${hostname}:${port} Closed out remaining connections`);
 //     process.exit(0);
 //   });
-// }, 120000);
+// }, 60000);
