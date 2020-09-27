@@ -210,9 +210,9 @@ var server = app.listen(port, function () {
 });
 
 
-// setTimeout(() => {
-//   server.close(() => {
-//     console.log(`Node ${hostname}:${port} Closed out remaining connections`);
-//     process.exit(0);
-//   });
-// }, 60000);
+setTimeout(() => {
+  server.close(() => {
+    console.log(`Node ${hostname}:${port} Closed out remaining connections`);
+    process.exit(0);
+  });
+}, 3000000);

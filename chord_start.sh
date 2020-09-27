@@ -185,15 +185,15 @@ if [ "$1" = "demo" ]; then
   # echo "SORTED_OBJECT_MAP[1]: ${SORTED_OBJECT_MAP[1]}"
   # echo "SORTED_OBJECT_MAP[2]: ${SORTED_OBJECT_MAP[2]}"
 
-  for l in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
-    # echo "SORTED_PORTS[${i}]: ${SORTED_PORTS[i]}"
-    # echo "NEIGHBORS_IDENTIFIER_IDS[${i}]: ${NEIGHBORS_IDENTIFIER_IDS[i]}"
-    # echo "NEIGHBORS_ADDRESSES[${i}]: ${NEIGHBORS_ADDRESSES[i]}"
-    # echo "OBJECT_MAP[${i}]: ${OBJECT_MAP[i]}"
-    # echo "SORTED_NODE_IDENTIFIER_IDS[${i}]: ${SORTED_NODE_IDENTIFIER_IDS[i]}"
-    # echo "INDEX[${i}]"
-    echo "PORT='${SORTED_PORTS[l]}' NEIGHBORS_IDENTIFIER_IDS='${NEIGHBORS_IDENTIFIER_IDS[l]}' NEIGHBORS_ADDRESSES='${NEIGHBORS_ADDRESSES[l]}' OBJECT_MAP='${OBJECT_MAP[l]}' INDEX='${l}' MY_ID='${SORTED_NODE_IDENTIFIER_IDS[l]}' node ./app.js"
-  done
+  # for l in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
+  #   # echo "SORTED_PORTS[${i}]: ${SORTED_PORTS[i]}"
+  #   # echo "NEIGHBORS_IDENTIFIER_IDS[${i}]: ${NEIGHBORS_IDENTIFIER_IDS[i]}"
+  #   # echo "NEIGHBORS_ADDRESSES[${i}]: ${NEIGHBORS_ADDRESSES[i]}"
+  #   # echo "OBJECT_MAP[${i}]: ${OBJECT_MAP[i]}"
+  #   # echo "SORTED_NODE_IDENTIFIER_IDS[${i}]: ${SORTED_NODE_IDENTIFIER_IDS[i]}"
+  #   # echo "INDEX[${i}]"
+  #   echo "PORT='${SORTED_PORTS[l]}' NEIGHBORS_IDENTIFIER_IDS='${NEIGHBORS_IDENTIFIER_IDS[l]}' NEIGHBORS_ADDRESSES='${NEIGHBORS_ADDRESSES[l]}' OBJECT_MAP='${OBJECT_MAP[l]}' INDEX='${l}' MY_ID='${SORTED_NODE_IDENTIFIER_IDS[l]}' node ./app.js"
+  # done
 
 
   for l in "${!SORTED_HOSTS[@]}"; do
