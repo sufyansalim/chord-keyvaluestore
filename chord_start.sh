@@ -6,7 +6,7 @@ if [ $# -lt 2 ]
     exit
 fi
 
-# sh generate_hosts.sh $2
+sh generate_hosts.sh $2
 
 if [ "$1" = "demo" ]; then
   LINE=1
@@ -192,14 +192,12 @@ if [ "$1" = "demo" ]; then
     # echo "OBJECT_MAP[${i}]: ${OBJECT_MAP[i]}"
     # echo "SORTED_NODE_IDENTIFIER_IDS[${i}]: ${SORTED_NODE_IDENTIFIER_IDS[i]}"
     # echo "INDEX[${i}]"
-    echo "PORT='${SORTED_PORTS[l]}' NEIGHBORS_IDENTIFIER_IDS='${NEIGHBORS_IDENTIFIER_IDS[l]}' NEIGHBORS_ADDRESSES='${NEIGHBORS_ADDRESSES[l]}' OBJECT_MAP='${OBJECT_MAP[l]}' INDEX='${l}' MY_ID='${SORTED_NODE_IDENTIFIER_IDS[l]}' nodemon ./app.js"
+    echo "PORT='${SORTED_PORTS[l]}' NEIGHBORS_IDENTIFIER_IDS='${NEIGHBORS_IDENTIFIER_IDS[l]}' NEIGHBORS_ADDRESSES='${NEIGHBORS_ADDRESSES[l]}' OBJECT_MAP='${OBJECT_MAP[l]}' INDEX='${l}' MY_ID='${SORTED_NODE_IDENTIFIER_IDS[l]}' node ./app.js"
   done
 
 
-
-
-  # for l in "${!SORTED_HOSTS[@]}"; do
-  #   ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"';node '"'$(pwd)'"'/app.js'
-  # done
+  for l in "${!SORTED_HOSTS[@]}"; do
+    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"';node '"'$(pwd)'"'/app.js'
+  done
 
 fi
