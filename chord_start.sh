@@ -93,9 +93,14 @@ if [ "$1" = "demo" ]; then
 
   HASHED_KEYS=(${HASHED_KEYS_STRING// / })
 
+  # echo "KEY_VALUE_PAIRS: ${KEY_VALUE_PAIRS[*]}"
   # echo "HASHED_KEYS: ${HASHED_KEYS[*]}"
 
   # IFS=$'\n' SORTED_HASHED_KEYS=($(sort <<<"${HASHED_KEYS[*]}")); unset IFS
+
+  # echo "SORTED_NODE_IDENTIFIER_IDS[0]: ${SORTED_NODE_IDENTIFIER_IDS[0]}"
+  # echo "SORTED_NODE_IDENTIFIER_IDS[1]: ${SORTED_NODE_IDENTIFIER_IDS[1]}"
+  # echo "SORTED_NODE_IDENTIFIER_IDS[2]: ${SORTED_NODE_IDENTIFIER_IDS[2]}"
 
   for i in "${!HASHED_KEYS[@]}"; do
     for j in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
@@ -151,6 +156,7 @@ if [ "$1" = "demo" ]; then
   # echo "SORTED_HOSTS[1]: ${SORTED_HOSTS[1]}"
   # echo "SORTED_HOSTS[2]: ${SORTED_HOSTS[2]}"
 
+
   # echo "SORTED_NODE_IDENTIFIER_IDS[0]: ${SORTED_NODE_IDENTIFIER_IDS[0]}"
   # echo "SORTED_NODE_IDENTIFIER_IDS[1]: ${SORTED_NODE_IDENTIFIER_IDS[1]}"
   # echo "SORTED_NODE_IDENTIFIER_IDS[2]: ${SORTED_NODE_IDENTIFIER_IDS[2]}"
@@ -163,10 +169,26 @@ if [ "$1" = "demo" ]; then
   # echo "NEIGHBORS_IDENTIFIER_IDS[1]: ${NEIGHBORS_IDENTIFIER_IDS[1]}"
   # echo "NEIGHBORS_IDENTIFIER_IDS[2]: ${NEIGHBORS_IDENTIFIER_IDS[2]}"
 
+  # echo "OBJECT_MAP[0]: ${OBJECT_MAP[0]}"
+  # echo "OBJECT_MAP[1]: ${OBJECT_MAP[1]}"
+  # echo "OBJECT_MAP[2]: ${OBJECT_MAP[2]}"
+
+  # for i in "${!OBJECT_MAP[@]}"; do
+  #   ITEM=${OBJECT_MAP[i]}
+  #   echo "ITEM: ${ITEM}"
+  #   echo "i: ${i}"
+  #   IFS=$'\n' SORTED_OBJECT_MAP[i]=($(sort <<< "${ITEM}")); unset IFS
+  # done
+
+  # echo "SORTED_OBJECT_MAP[0]: ${SORTED_OBJECT_MAP[0]}"
+  # echo "SORTED_OBJECT_MAP[1]: ${SORTED_OBJECT_MAP[1]}"
+  # echo "SORTED_OBJECT_MAP[2]: ${SORTED_OBJECT_MAP[2]}"
+
+
 
 
   for l in "${!SORTED_HOSTS[@]}"; do
-    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"';node '"'$(pwd)'"'/app.js'
+    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"';node '"'$(pwd)'"'/app.js'
   done
 
 fi

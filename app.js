@@ -10,11 +10,15 @@ const port = process.env.PORT || 42069;
 const neighbors_identified_ids = process.env.NEIGHBORS_IDENTIFIER_IDS || "";
 const neighbors_addresses = process.env.NEIGHBORS_ADDRESSES || "";
 const object_map = process.env.OBJECT_MAP || "";
+const node_index = process.env.INDEX || "";
 
 const hostname = os.hostname();
+const previous_node_id = neighbors_identified_ids.split(" ")[0];
+const next_node_id = neighbors_identified_ids.split(" ")[1];
 const previous_node_address = neighbors_addresses.split(" ")[0];
 const next_node_address = neighbors_addresses.split(" ")[1];
 
+console.log("node_index: ", node_index)
 
 // console.log(`host: ${hostname}     previous_node_address:  ${previous_node_address}`)
 // console.log(`host: ${hostname}     next_node_address:  ${next_node_address}`)
@@ -118,43 +122,96 @@ app.get('/storage/:key', function (req, res) {
   console.log("key_arr[map_arr.length - 1]",key_arr[key_arr.length - 1])
 
 
+  // Handle the case is map is empty
+  if (map == {}) {
+    if (key < previous_node_id) {
+      console.log(`empty map, redirecting from ${hostname}:${port} to prev node: ${previous_node_address}`)
+
+      http.get(`http://${previous_node_address}/storage/${key}`, resp => {
+          let data = ''
+          let peopleData = ''
+          resp.on('data', chunk => {
+              data += chunk
+          })
+          resp.on('end', () => {
+              peopleData = JSON.parse(data)
+              console.log("peopleData:", peopleData)
+              res.json(peopleData)
+          })
+      })
+    } else {
+      console.log(`empty map, redirecting from ${hostname}:${port} to next node: ${next_node_address}`)
+
+      http.get(`http://${next_node_address}/storage/${key}`, resp => {
+          let data = ''
+          let peopleData = ''
+          resp.on('data', chunk => {
+              data += chunk
+          })
+          resp.on('end', () => {
+              peopleData = JSON.parse(data)
+              console.log("peopleData:", peopleData)
+              res.json(peopleData)
+          })
+      })
+    }
+  }
+
   if (map[key]) {
     console.log("hit on host :", hostname)
     res.json(map[key])
   } else if (key < key_arr[0]) {
-    console.log(`redirecting from ${hostname}:${port} to prev node: ${previous_node_address}`)
 
-    http.get(`http://${previous_node_address}/storage/${key}`, resp => {
-        let data = ''
-        let peopleData = ''
-        resp.on('data', chunk => {
-            data += chunk
-        })
-        resp.on('end', () => {
-            peopleData = JSON.parse(data)
-            console.log("peopleData:", peopleData)
-            res.json(peopleData)
-        })
-        
-    })
-    // res.status(404).send("NOT found")
+    if (node_index == 0) {
+      console.log(`smaller than node 0 first element, not found`);
+      res.status(404).send("NOT FOUND");
+    } else {
+      console.log(`redirecting from ${hostname}:${port} to prev node: ${previous_node_address}`)
     
-  } else if (key > key_arr[key_arr.length - 1]) {
-    console.log(`redirecting from ${hostname}:${port} to next node: ${next_node_address}`)
+      http.get(`http://${previous_node_address}/storage/${key}`, resp => {
+          let data = ''
+          let peopleData = ''
+          resp.on('data', chunk => {
+              data += chunk
+          })
+          resp.on('end', () => {
+            if (resp.statusCode == '404') {
+              res.status(404).send("NOT FOUND");
+            } else {
+              peopleData = JSON.parse(data)
+              console.log("peopleData:", peopleData)
+              res.json(peopleData)
+            }
+          })
+      })
 
-    http.get(`http://${next_node_address}/storage/${key}`, resp => {
-        let data = ''
-        let peopleData = ''
-        resp.on('data', chunk => {
-            data += chunk
-        })
-        resp.on('end', () => {
-            peopleData = JSON.parse(data)
-            console.log("peopleData:", peopleData)
-            res.json(peopleData)
-        })
-    })
-    // res.status(404).send("NOT found")
+    }
+
+  } else if (key > key_arr[key_arr.length - 1]) {
+    if (node_index == 0) {
+      console.log(`larger than node 0 last element, not found`);
+      res.status(404).send("NOT FOUND");
+    } else {
+      console.log(`redirecting from ${hostname}:${port} to next node: ${next_node_address}`)
+
+      http.get(`http://${next_node_address}/storage/${key}`, resp => {
+          let data = ''
+          let peopleData = ''
+          resp.on('data', chunk => {
+              data += chunk
+          })
+          resp.on('end', () => {
+              if (resp.statusCode == '404') {
+                res.status(404).send("NOT FOUND");
+              } else {
+                peopleData = JSON.parse(data)
+                console.log("peopleData:", peopleData)
+                res.json(peopleData)
+              }
+          })
+      })
+
+    }
   } else {
     res.status(404).send("NOT FOUND")
   }
@@ -166,7 +223,7 @@ app.get('/neighbors', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  res.send('Hello!');
 });
 
 var server = app.listen(port, function () {
