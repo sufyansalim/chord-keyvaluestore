@@ -18,17 +18,19 @@ const node_index = process.env.INDEX || "";
 const my_id = process.env.MY_ID || "";
 
 const hostname = os.hostname();
+
 const previous_node_id = neighbors_identified_ids.split(" ")[0];
 const next_node_id = neighbors_identified_ids.split(" ")[1];
-const previous_node_address1 = neighbors_addresses.split(" ")[0];
-const next_node_address1 = neighbors_addresses.split(" ")[1];
-const previous_node_hostname = "localhost";
-const next_node_hostname = "localhost";
-const previous_node_port = previous_node_address1.split(":")[1];
-const next_node_port = next_node_address1.split(":")[1];
 
-const previous_node_address = previous_node_address1;
-const next_node_address = next_node_address1;
+const previous_node_address = neighbors_addresses.split(" ")[0];
+const next_node_address = neighbors_addresses.split(" ")[1];
+
+const previous_node_hostname = previous_node_address.split(":")[0];
+const previous_node_port = previous_node_address.split(":")[1];
+
+const next_node_hostname = next_node_address.split(":")[0];
+const next_node_port = next_node_address.split(":")[1];
+
 
 function sortMapById(map) {
   let result = {};
@@ -54,8 +56,6 @@ let map = object_map.split(" ").sort().reduce((acc, item) => {
   }
   return { ...acc, ...result };
 }, {});
-
-// console.log("map",map)
 
 app.put('/storage/:key', function (req, res) {
   const value = req.body.data;
