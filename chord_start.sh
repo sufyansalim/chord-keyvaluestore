@@ -188,7 +188,7 @@ if [ "$1" = "demo" ]; then
 
 
   for l in "${!SORTED_HOSTS[@]}"; do
-    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"';node '"'$(pwd)'"'/app.js'
+    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"';node '"'$(pwd)'"'/app.js'
   done
 
 fi
