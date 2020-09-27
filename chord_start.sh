@@ -6,7 +6,7 @@ if [ $# -lt 2 ]
     exit
 fi
 
-sh generate_hosts.sh $2
+# sh generate_hosts.sh $2
 
 if [ "$1" = "demo" ]; then
   LINE=1
@@ -14,8 +14,8 @@ if [ "$1" = "demo" ]; then
     do
 
       HOSTS[LINE-1]=$NODE
-      # PORTS[LINE-1]=$(( ( RANDOM % (65535-49152) ) + 49152 ))
-      PORTS[LINE-1]=55555
+      PORTS[LINE-1]=$(( ( RANDOM % (65535-49152) ) + 49152 ))
+      # PORTS[LINE-1]=55555
       ADDRESSES[LINE-1]="${NODE}:${PORTS[LINE-1]}"
 
       ((LINE++))
@@ -185,16 +185,21 @@ if [ "$1" = "demo" ]; then
   # echo "SORTED_OBJECT_MAP[1]: ${SORTED_OBJECT_MAP[1]}"
   # echo "SORTED_OBJECT_MAP[2]: ${SORTED_OBJECT_MAP[2]}"
 
-  for i in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
-    echo "SORTED_NODE_IDENTIFIER_IDS[${i}]: ${SORTED_NODE_IDENTIFIER_IDS[i]}"
-    echo "OBJECT_MAP[${i}]: ${OBJECT_MAP[i]}"
+  for l in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
+    # echo "SORTED_PORTS[${i}]: ${SORTED_PORTS[i]}"
+    # echo "NEIGHBORS_IDENTIFIER_IDS[${i}]: ${NEIGHBORS_IDENTIFIER_IDS[i]}"
+    # echo "NEIGHBORS_ADDRESSES[${i}]: ${NEIGHBORS_ADDRESSES[i]}"
+    # echo "OBJECT_MAP[${i}]: ${OBJECT_MAP[i]}"
+    # echo "SORTED_NODE_IDENTIFIER_IDS[${i}]: ${SORTED_NODE_IDENTIFIER_IDS[i]}"
+    # echo "INDEX[${i}]"
+    echo "PORT='${SORTED_PORTS[l]}' NEIGHBORS_IDENTIFIER_IDS='${NEIGHBORS_IDENTIFIER_IDS[l]}' NEIGHBORS_ADDRESSES='${NEIGHBORS_ADDRESSES[l]}' OBJECT_MAP='${OBJECT_MAP[l]}' INDEX='${l}' MY_ID='${SORTED_NODE_IDENTIFIER_IDS[l]}' nodemon ./app.js"
   done
 
 
 
 
-  for l in "${!SORTED_HOSTS[@]}"; do
-    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"';node '"'$(pwd)'"'/app.js'
-  done
+  # for l in "${!SORTED_HOSTS[@]}"; do
+  #   ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"';node '"'$(pwd)'"'/app.js'
+  # done
 
 fi
