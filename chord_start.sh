@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+# !/bin/bash -l
 
 if [ $# -lt 2 ]
   then
@@ -8,9 +8,7 @@ fi
 
 sh generate_hosts.sh $2
 
-if [ "$1" = "chord" ]; then
-  ssh -f compute-8-2 "node /home/ssa169/Distrubuted-System/chord/server.js"
-elif [ "$1" = "demo" ]; then
+if [ "$1" = "demo" ]; then
   LINE=1
   while read -r NODE
     do
@@ -21,71 +19,121 @@ elif [ "$1" = "demo" ]; then
 
       ((LINE++))
   done < "./hostfile"
-fi
+  
+  # echo "ADDRESSES: ${ADDRESSES[*]}"
 
-IDENTIFIER_IDS_STRING=$(HOSTS=${HOSTS[*]} PORTS=${PORTS[*]} ADDRESSES=${ADDRESSES[*]} node initialize_nodes.js)
-echo "IDENTIFIER_IDS_STRING : $IDENTIFIER_IDS_STRING"
+  NODE_IDENTIFIER_IDS_STRING=$(ADDRESSES=${ADDRESSES[*]} node initialize_nodes.js)
+  # echo "IDENTIFIER_IDS_STRING : $IDENTIFIER_IDS_STRING"
 
-IDENTIFIER_IDS=(${IDENTIFIER_IDS_STRING// / })
+  NODE_IDENTIFIER_IDS=(${NODE_IDENTIFIER_IDS_STRING// / })
+  # echo "NODE_IDENTIFIER_IDS: ${NODE_IDENTIFIER_IDS[*]}"
 
-IFS=$'\n' SORTED_IDENTIFIER_IDS=($(sort <<<"${IDENTIFIER_IDS[*]}")); unset IFS
+  IFS=$'\n' SORTED_NODE_IDENTIFIER_IDS=($(sort <<<"${NODE_IDENTIFIER_IDS[*]}")); unset IFS
 
-for k in "${!SORTED_IDENTIFIER_IDS[@]}"; do
-  echo "SORTED_IDENTIFIER_IDS[k] : ${SORTED_IDENTIFIER_IDS[k]}"
-done
+  # echo "SORTED_NODE_IDENTIFIER_IDS: ${SORTED_NODE_IDENTIFIER_IDS[*]}"
 
-# echo "SORTED_IDENTIFIER_IDS : $SORTED_IDENTIFIER_IDS"/
+  TOTAL_NODE_IDENTIFIER=${#HOSTS[@]}
+  # echo "TOTAL_NODE_IDENTIFIER : $TOTAL_NODE_IDENTIFIER"
 
-# IDENTIFIER_IDS=(${IDENTIFIER_IDS// / })
+  for i in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
+    for j in "${!NODE_IDENTIFIER_IDS[@]}"; do
+      if [ "${SORTED_NODE_IDENTIFIER_IDS[i]}" = "${NODE_IDENTIFIER_IDS[j]}" ]; then
+        # Find neighbors
+        if [ ${i} = 0 ]; then
+          NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_NODE_IDENTIFIER_IDS[TOTAL_NODE_IDENTIFIER-1]} ${SORTED_NODE_IDENTIFIER_IDS[${i}+1]}"
+          NEIGHBORS_ADDRESSES[i]="${ADDRESSES[TOTAL_NODE_IDENTIFIER-1]} ${ADDRESSES[${i}+1]}"
+        elif [ ${i} = $((TOTAL_NODE_IDENTIFIER-1)) ]; then
+          NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_NODE_IDENTIFIER_IDS[${i}-1]} ${SORTED_NODE_IDENTIFIER_IDS[0]}"
+          NEIGHBORS_ADDRESSES[i]="${ADDRESSES[${i}-1]} ${ADDRESSES[0]}"
+        else
+          NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_NODE_IDENTIFIER_IDS[${i}-1]} ${SORTED_NODE_IDENTIFIER_IDS[${i}+1]}"
+          NEIGHBORS_ADDRESSES[i]="${ADDRESSES[${i}-1]} ${ADDRESSES[${i}+1]}"
+        fi
 
-TOTAL_IDENTIFIER=${#HOSTS[@]}
-# echo "TOTAL_IDENTIFIER : $TOTAL_IDENTIFIER"
+        SORTED_HOSTS[i]=${HOSTS[j]}
+        SORTED_PORTS[i]=${PORTS[j]}
+        SORTED_ADDRESSES[i]=${ADDRESSES[j]}
 
-for i in "${!IDENTIFIER_IDS[@]}"; do
-  for j in "${!SORTED_IDENTIFIER_IDS[@]}"; do
-    # last_element_index=${${TOTAL_IDENTIFIER}-1}
-    # echo "last_element_index : $last_element_index"
-    # echo "IDENTIFIER_IDS: ${IDENTIFIER_IDS[i]}"
-    # echo "SORTED_IDENTIFIER_IDS: ${SORTED_IDENTIFIER_IDS[j]}"
-    if [ "${IDENTIFIER_IDS[$i]}" = "${SORTED_IDENTIFIER_IDS[$j]}" ]; then
-      # echo "j: ${j}"
-      if [ ${j} = 0 ]; then
-        NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_IDENTIFIER_IDS[TOTAL_IDENTIFIER-1]} ${SORTED_IDENTIFIER_IDS[${j}+1]}"
-        NEIGHBORS_ADDRESSES[i]="${ADDRESSES[TOTAL_IDENTIFIER-1]} ${ADDRESSES[${j}+1]}"
-      elif [ ${j} = $((TOTAL_IDENTIFIER-1)) ]; then
-        NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_IDENTIFIER_IDS[${j}-1]} ${SORTED_IDENTIFIER_IDS[0]}"
-        NEIGHBORS_ADDRESSES[i]="${ADDRESSES[${j}-1]} ${ADDRESSES[0]}"
-      else
-        NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_IDENTIFIER_IDS[${j}-1]} ${SORTED_IDENTIFIER_IDS[${j}+1]}"
-        NEIGHBORS_ADDRESSES[i]="${ADDRESSES[${j}-1]} ${ADDRESSES[${j}+1]}"
       fi
-    fi
+    done
+
   done
-  NODE=${HOSTS[i]}
-  # echo "NODE: ${NODE}"
-  # echo "NEIGHBORS_IDENTIFIER_IDS: ${NEIGHBORS_IDENTIFIER_IDS[i]}"
-  # echo "NEIGHBORS_ADDRESSES: ${NEIGHBORS_ADDRESSES[i]}"
-  # ssh -f ${HOSTS[i]} "node /home/kla130/INF-3200-Distributed-Systems/Assignment1/code/app.js NEIGHBORS_IDENTIFIER_IDS=${NEIGHBORS_IDENTIFIER_IDS[i]} NEIGHBORS_ADDRESSES=${NEIGHBORS_ADDRESSES[i]}"
-  # ssh -f ${HOSTS[i]} "cd $(pwd); "NEIGHBORS_IDENTIFIER_IDS=${NEIGHBORS_IDENTIFIER_IDS[i]} NEIGHBORS_ADDRESSES=${NEIGHBORS_ADDRESSES[i]} node app.js""
-done
 
-for l in "${!HOSTS[@]}"; do
-  echo "NEIGHBORS_IDENTIFIER_IDS: ${NEIGHBORS_IDENTIFIER_IDS[l]}"
-  echo "NEIGHBORS_ADDRESSES: ${NEIGHBORS_ADDRESSES[l]}"
-  echo "PORT: ${PORTS[l]}"
-  ssh -f ${HOSTS[i]} 'export PORT='"'${PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"';node '"'$(pwd)'"'/app.js'
-  # ssh -f compute-6-4 'export PORT=57777 NEIGHBORS_IDENTIFIER_IDS=999 NEIGHBORS_ADDRESSES=222;node '"'$(pwd)'"'/app.js'
-  # ssh -f ${HOSTS[l]} "NEIGHBORS_IDENTIFIER_IDS=${NEIGHBORS_IDENTIFIER_IDS[l]} NEIGHBORS_ADDRESSES=${NEIGHBORS_ADDRESSES[l]} node /home/kla130/INF-3200-Distributed-Systems/Assignment1/code/app.js"
-done
+  # echo "SORTED_ADDRESSES: ${SORTED_ADDRESSES[*]}"
+  # echo "NEIGHBORS_IDENTIFIER_IDS: ${NEIGHBORS_IDENTIFIER_IDS[*]}"
 
-# LINE=1
-# while read -r NODE
-#   do
 
-#     ssh -f $NODE "ID=$NODE_ID node /home/kla130/INF-3200-Distributed-Systems/Assignment1/code/app.js"
+  LINE=1
+  while read -r KEY_VALUE_PAIR
+    do
 
-#     HOSTS[LINE-1]=$NODE
+      # Extract the key from the key-value pair and store it
+      KEY_VALUE_PAIRS[LINE-1]=${KEY_VALUE_PAIR}
 
-#     ((LINE++))
-# done < "./hostfile"
+      # Extract the key from the key-value pair and store it
+      KEY=(${KEY_VALUE_PAIR//,/ })
+      KEYS[LINE-1]=${KEY[0]}
+      VALUES[LINE-1]=${KEY[1]}
 
+      ((LINE++))
+  done < "./keysfile"
+
+  # echo "VALUES: ${VALUES[*]}"
+
+  HASHED_KEYS_STRING=$(KEYS=${KEYS[*]} node initialize_keys.js)
+  # echo "HASHED_KEYS_STRING : $HASHED_KEYS_STRING"
+
+  HASHED_KEYS=(${HASHED_KEYS_STRING// / })
+
+  # echo "HASHED_KEYS: ${HASHED_KEYS[*]}"
+
+  # IFS=$'\n' SORTED_HASHED_KEYS=($(sort <<<"${HASHED_KEYS[*]}")); unset IFS
+
+  for i in "${!HASHED_KEYS[@]}"; do
+    for j in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
+      if [[ "${HASHED_KEYS[i]}" < "${SORTED_NODE_IDENTIFIER_IDS[j]}" ]]; then
+        KEYS_SUCCESSOR[i]="${SORTED_NODE_IDENTIFIER_IDS[j]}"
+        if [ -z "${OBJECT_MAP[j]}" ]; then
+          # echo "Object map is empty for j=${j}"
+          OBJECT_MAP[j]="${HASHED_KEYS[i]}:${KEY_VALUE_PAIRS[i]}"
+          # echo "OBJECT_MAP[j]: ${OBJECT_MAP[j]}"
+        else
+          # echo "Object map is not empty for j=${j}"
+          OBJECT_MAP[j]+=" ${HASHED_KEYS[i]}:${KEY_VALUE_PAIRS[i]}"
+          # echo "OBJECT_MAP[j]: ${OBJECT_MAP[j]}"
+        fi
+        break
+      elif [ ${j} = $((TOTAL_NODE_IDENTIFIER-1)) ]; then
+        KEYS_SUCCESSOR[i]="${SORTED_NODE_IDENTIFIER_IDS[0]}"
+        if [ -z "${OBJECT_MAP[0]}" ]; then
+          # echo "Object map is empty for [0]"
+          OBJECT_MAP[0]="${HASHED_KEYS[i]}:${KEY_VALUE_PAIRS[i]}"
+          # echo "OBJECT_MAP[0]: ${OBJECT_MAP[0]}"
+        else
+          # echo "Object map is not empty for [0]"
+          OBJECT_MAP[0]+=" ${HASHED_KEYS[i]}:${KEY_VALUE_PAIRS[i]}"
+          # echo "OBJECT_MAP[0]: ${OBJECT_MAP[0]}"
+        fi
+      fi
+    done
+      # echo "OBJECT_MAP: ${OBJECT_MAP[i]}"
+  done
+
+
+  # echo "KEYS_SUCCESSOR: ${KEYS_SUCCESSOR[*]}"
+
+  # echo "OBJECT_MAP[0]: ${OBJECT_MAP[0]}"
+  # echo "OBJECT_MAP[1]: ${OBJECT_MAP[1]}"
+  # echo "OBJECT_MAP[1]: ${OBJECT_MAP[2]}"
+
+  # echo "SORTED_PORTS: ${SORTED_PORTS[*]}"
+
+  # echo "NEIGHBORS_ADDRESSES: ${NEIGHBORS_ADDRESSES[*]}"
+
+
+
+  for l in "${!SORTED_HOSTS[@]}"; do
+    ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"';node '"'$(pwd)'"'/app.js'
+  done
+
+fi
