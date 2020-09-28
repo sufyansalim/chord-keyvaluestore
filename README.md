@@ -10,4 +10,4 @@ Install NODE and packages:
 
 Run the servers:
   1. [Optional] To initialize some pre-defined key-value pairs, create a "keysfile". The format of key-value pairs is [key],[value], one pair per line
-  2. to start the servers, use "./chord_start demo [X]", where X is the number of hosts you want to use
+  2. to start the servers, use "./chord_start X", where X is the number of hosts you want to use
