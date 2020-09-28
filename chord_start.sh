@@ -28,7 +28,7 @@ if [ "$1" = "demo" ]; then
   # Use the address of the node as the key and the hash it
   # The consistence hashing function is implemented inside the "hash_keys.js" file
   # The identifier space is 256-bit
-  NODE_IDENTIFIER_IDS_STRING=$(ADDRESSES=${ADDRESSES[*]} node hash_keys.js)
+  NODE_IDENTIFIER_IDS_STRING=$(KEYS=${ADDRESSES[*]} node hash_keys.js)
 
   # Convert the node identifiers into array 
   NODE_IDENTIFIER_IDS=(${NODE_IDENTIFIER_IDS_STRING// / })
