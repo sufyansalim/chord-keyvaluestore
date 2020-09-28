@@ -1,7 +1,13 @@
-Assignment Handout for UiT INF-3200 Assignment 1, Fall 2020
+How to compile and run the code:
 
-This is assignment hand-out text and example code for assignment 1
-of the Distributed Systems course (INF-3200) at UiT the Arctic University of Norway.
+Download NVM:
+  1. curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+  2. restart the terminal
 
-- See [handout/INF_3200_F2020_Assignment1.pdf](handout/INF_3200_F2020_Assignment1.pdf) for assignment details.
-- See the [example_code/](example_code/) directory for starter code.
+Install NODE and packages:
+  1. nvm install node
+  2. npm install
+
+Run the servers:
+  1. [Optional] To initialize some pre-defined key-value pairs, create a "keysfile". The format of key-value pairs is [key],[value], one pair per line
+  2. to start the servers, use "./chord_start demo [X]", where X is the number of hosts you want to use
