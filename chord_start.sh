@@ -1,13 +1,13 @@
 # !/bin/bash -l
 
-if [ $# -lt 2 ]
+if [ $# -lt 1 ]
   then
     echo "Usage: chord|demo num_hosts"
     exit
 fi
 
 # Use the "generate_hosts" to generate the nodes
-sh generate_hosts.sh $2
+sh generate_hosts.sh $1
 
 # Read the hostfile to store the hostname, port and address for the nodes
 LINE=1
