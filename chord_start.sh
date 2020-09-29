@@ -2,7 +2,7 @@
 
 if [ $# -lt 1 ]
   then
-    echo "Usage: chord|demo num_hosts"
+    echo "Usage: num_hosts"
     exit
 fi
 
@@ -116,6 +116,10 @@ for i in "${!HASHED_KEYS[@]}"; do
     fi
   done
 done
+
+for j in "${!SORTED_HOSTS[@]}"; do
+  echo "${SORTED_HOSTS[j]}:${SORTED_PORTS[j]}"
+done >tmpaddress
 
 # SSH to each node and start the server using "node app.js" command,
 # parameters such as object map are passed as Environment variables into the server in the starting phrase
