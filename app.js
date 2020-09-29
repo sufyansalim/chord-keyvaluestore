@@ -65,17 +65,18 @@ let map = object_map.split(" ").sort().reduce((acc, item) => {
 // Create the PUT API for '/storage/:key'
 app.put('/storage/:key', function (req, res) {
   // Get the value from the request body
-  const value = req.body.data;
+  const value = Object.keys(req.body)[0];
+  console.log("value in PUT",value )
   // Get the key from the parameter from the url
   const key = req.params.key;
   // Use the same hash function to hash the key obtained from above
   const hash_key = crypto.createHash('md5').update(key).digest('hex');
   
   // Output some info about this server, can be removed
-  console.log(`Info about ME: MY_ID: ${my_id}, node_index: ${node_index}, previous_node_address: ${previous_node_address}, next_node_address: ${next_node_address}, 
-previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
-  console.log(`Info about MY tables: object_map: ${object_map}`);
-  console.log(`Info about request: value: ${value}, key: ${key}, hash_key: ${hash_key}, req body: ${req.body}`)
+//   console.log(`Info about ME: MY_ID: ${my_id}, node_index: ${node_index}, previous_node_address: ${previous_node_address}, next_node_address: ${next_node_address}, 
+// previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
+//   console.log(`Info about MY tables: object_map: ${object_map}`);
+//   console.log(`Info about request: value: ${value}, key: ${key}, hash_key: ${hash_key}, req body: ${req.body}`)
 
   // If the key is found
   if (map[hash_key]) {
@@ -95,9 +96,9 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
       // Because node 0 may store the data that its key is greater than the last node in the ring
       // So if the key is greater next node's key but less than the last node, then ask the last node in this case
       if (hash_key > next_node_id && hash_key < previous_node_id ) {
-        console.log(`node_index == 0, PUT from ${hostname}:${port} to prev node: ${previous_node_address}`)
+        // console.log(`node_index == 0, PUT from ${hostname}:${port} to prev node: ${previous_node_address}`)
         // Perform the PUT call to the previous node
-        axios.put(`http://${previous_node_hostname}:${previous_node_port}/storage/${key}`, `data=${value}`)
+        axios.put(`http://${previous_node_hostname}:${previous_node_port}/storage/${key}`, `${value}`)
           .then((_res) => {
             const result = _res.data;
             res.json(result)
@@ -107,9 +108,9 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 
       // Ask the next node for the data, and make sure its key is less then the one in next node
       } else if (hash_key > my_id && hash_key < next_node_id) {
-        console.log(`node_index == 0, PUT from ${hostname}:${port} to next node: ${next_node_address}`)
+        // console.log(`node_index == 0, PUT from ${hostname}:${port} to next node: ${next_node_address}`)
         // Perform the PUT call to the next node
-        axios.put(`http://${next_node_hostname}:${next_node_port}/storage/${key}`, `data=${value}`)
+        axios.put(`http://${next_node_hostname}:${next_node_port}/storage/${key}`, `${value}`)
           .then((_res) => {
             const result = _res.data;
             res.json(result)
@@ -119,7 +120,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 
       // Store the data if the key is less than itself or the key is greater than the last node
       } else {
-        console.log("node_index == 0, CREATED on host:", hostname)
+        // console.log("node_index == 0, CREATED on host:", hostname)
         // Store the value
         map[hash_key] = value;
         // Sort the map after inserting the new value
@@ -135,9 +136,9 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 
       // Ask the previous node for the data if the key of the data is less than the previous node
       if (hash_key < previous_node_id) {
-        console.log(`node != 0, PUT from ${hostname}:${port} to prev node: ${previous_node_address}`)
+        // console.log(`node != 0, PUT from ${hostname}:${port} to prev node: ${previous_node_address}`)
         // Perform the PUT call to the previous node
-        axios.put(`http://${previous_node_hostname}:${previous_node_port}/storage/${key}`, `data=${value}`)
+        axios.put(`http://${previous_node_hostname}:${previous_node_port}/storage/${key}`, `${value}`)
           .then((_res) => {
             const result = _res.data;
             res.json(result)
@@ -147,9 +148,9 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
           
       // Ask the next node for the data if the key of the data is greater than itself
       } else if (hash_key > my_id) {
-        console.log(`node_index != 0, PUT from ${hostname}:${port} to next node: ${next_node_address}`)
+        // console.log(`node_index != 0, PUT from ${hostname}:${port} to next node: ${next_node_address}`)
         // Perform the PUT call to the next node
-        axios.put(`http://${next_node_hostname}:${next_node_port}/storage/${key}`, `data=${value}`)
+        axios.put(`http://${next_node_hostname}:${next_node_port}/storage/${key}`, `${value}`)
           .then((_res) => {
             const result = _res.data;
             res.json(result)
@@ -159,7 +160,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 
       // Store the data if the key is greater than the previous node and the key is less than itself
       } else {
-        console.log("node_index != 0, CREATED on host:", hostname)
+        // console.log("node_index != 0, CREATED on host:", hostname)
         // Store the value
         map[hash_key] = value;
          // Sort the map after inserting the new value
@@ -176,17 +177,18 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 // Create the GET API for '/storage/:key'
 app.get('/storage/:key', function (req, res) {
   // Get the value from the request body
-  const value = req.body.data;
+  const value = req.body;
+  console.log("value in GET",value )
   // Get the key from the parameter from the url
   const key = req.params.key;
   // Use the same hash function to hash the key obtained from above
   const hash_key = crypto.createHash('md5').update(key).digest('hex');
   
   // Output some info about this server, can be removed
-  console.log(`Info about ME: MY_ID: ${my_id}, node_index: ${node_index}, previous_node_address: ${previous_node_address}, next_node_address: ${next_node_address}, 
-previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
-  console.log(`Info about MY tables: object_map: ${object_map}`);
-  console.log(`Info about request: value: ${value}, key: ${key}, hash_key: ${hash_key}, req body: ${req.body}`)
+//   console.log(`Info about ME: MY_ID: ${my_id}, node_index: ${node_index}, previous_node_address: ${previous_node_address}, next_node_address: ${next_node_address}, 
+// previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
+//   console.log(`Info about MY tables: object_map: ${object_map}`);
+//   console.log(`Info about request: value: ${value}, key: ${key}, hash_key: ${hash_key}, req body: ${req.body}`)
 
   // If the key is found
   if (map[hash_key]) {
@@ -201,7 +203,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
     // Same logic as PUT, but using GET instead of PUT
     if (node_index == 0) {
       if (hash_key > next_node_id && hash_key < previous_node_id ) {
-        console.log(`node == 0, GET from ${hostname}:${port} to prev node: ${previous_node_address}`)
+        // console.log(`node == 0, GET from ${hostname}:${port} to prev node: ${previous_node_address}`)
         axios.get(`http://${previous_node_hostname}:${previous_node_port}/storage/${key}`)
           .then((_res) => {
             const result = _res.data;
@@ -212,7 +214,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 
       // Same logic as PUT, but using GET instead of PUT
       } else if (hash_key > my_id && hash_key < next_node_id) {
-        console.log(`node_index == 0, GET from ${hostname}:${port} to next node: ${next_node_address}`)
+        // console.log(`node_index == 0, GET from ${hostname}:${port} to next node: ${next_node_address}`)
         axios.get(`http://${next_node_hostname}:${next_node_port}/storage/${key}`)
           .then((_res) => {
             const result = _res.data;
@@ -222,7 +224,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
           });
       // If the key is less than itself or the key is greater the last node, meaning not found
       } else {
-        console.log("node_index == 0, NOT FOUND on host:", hostname)
+        // console.log("node_index == 0, NOT FOUND on host:", hostname)
         // Reply with "NOT FOUD" message
         res.json("NOT FOUND");
       }
@@ -231,7 +233,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
     } else {
       // Same logic as PUT, but using GET instead of PUT
       if (hash_key < previous_node_id) {
-        console.log(`node != 0, GET from ${hostname}:${port} to prev node: ${previous_node_address}`)
+        // console.log(`node != 0, GET from ${hostname}:${port} to prev node: ${previous_node_address}`)
         axios.get(`http://${previous_node_hostname}:${previous_node_port}/storage/${key}`)
           .then((_res) => {
             const result = _res.data;
@@ -242,7 +244,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
 
       // Same logic as PUT, but using GET instead of PUT
       } else if (hash_key > my_id) {
-        console.log(`node_index != 0, GET from ${hostname}:${port} to next node: ${next_node_address}`)
+        // console.log(`node_index != 0, GET from ${hostname}:${port} to next node: ${next_node_address}`)
         axios.get(`http://${next_node_hostname}:${next_node_port}/storage/${key}`)
           .then((_res) => {
             const result = _res.data;
@@ -252,7 +254,7 @@ previous_node_id: ${previous_node_id}, next_node_id: ${next_node_id}`);
           });
        // If the key is greater than the previous node and less than itself, meaning not found
       } else {
-        console.log("node_index != 0, NOT FOUND on host:", hostname)
+        // console.log("node_index != 0, NOT FOUND on host:", hostname)
         // Reply with "NOT FOUD" message
         res.json("NOT FOUND");
       }
