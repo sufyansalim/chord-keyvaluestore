@@ -1,7 +1,4 @@
 \documentclass[a4paper]{article}
-\usepackage{float}
-\usepackage{graphicx}
-\graphicspath{ {./images/} }
 
 %opening
 \title{INF3200: Distributed Systems Fundamentals \\
@@ -71,36 +68,6 @@ Moreover, we will sort node identifiers in alphanumeric order for both data and 
 
 Finally, we will start running the Chord by using ssh to get to that server and then use \texttt{$app.js$} file to start the process for serving 3 APIs calls: PUT and GET request for key-value pairs, and a GET request for neighbours. A few environmental variables are passed into the process, including the port of the process, the neighbours table, the table of data identifier, its own index and its own identifier. These variables are used in the \texttt{$app.js$} to implement the logic of that 3 APIs calls.
 
-\section{Evaluation and Results}
-
-A Nodejs package called  \texttt{autocannon} was used to measure performance with is a benchmark tool. The metrics used were request per second, throughput, and latency. Test cases are written for the three different API’S which will be running on different compute nodes and ports, given a time between 10 to 60 seconds, 10 users will be making requests to the different the hosts for this given test cases and will output the results in the form of a table. The names of the test cases are \texttt{getNeighbors},  \texttt{getstorageItem} and  \texttt{putstorageItem}. The figure 1 illustrates an example of  \texttt{getstorageItem} running on one node.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=8cm]{example}
-	\caption{an example output}
-	\centering
-\end{figure}
-
-The Figure 2 shows the number of requests per second given 1 to 16 nodes for the  \texttt{$GET\enspace STORAGE\enspace API$}.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=8cm]{figure2}
-	\caption{an example output of GET STORAGE API}
-	\centering
-\end{figure}
-
-The Figure 3 displays the number of requests per second given 1 to 16 nodes for the \texttt{$PUT\enspace STORAGE\enspace API$}.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=8cm]{figure3}
-	\caption{an example output of PUT STORAGE API}
-	\centering
-\end{figure}
-
-
 \section{Future Work}
 In our implementation, each node keeps its own neighbours table only, which produces the lookup speed as $O(n/2)$ with $n$ nodes in the worst case. To improve the lookup speed, we could provide a routing table for each instead of a neighbours table. To achieve this, we could create the routing table with logarithmic size S, where M = $2^S$ and M is the size of the identifier space. So, each node will know about the successor(N + $2^{(i-1)}$) for 1 = 1 …M, and hence the lookup speed will be reduced to $O(log\,n)$ in the worst case.
 
@@ -108,7 +75,7 @@ In addition, we also need to handle the maintenance of the ring. Periodic stabil
 
 \section{Conclusion}
 
-To implement the Chord system, first we utilise the consistence hashing with MD5 hashing function on both the node and data to distribute the keys evenly across nodes in the system. Then we sorted the keys in the hash table and create the neighbour table and data’s successor table for each node. After that, we distribute the tables to corresponding node and start up the node in order to serve 3 APIs calls, which are GET, PUT request for data and GET request for neighbours. Through the evaluation, we could see that as the number of hosts increases, the number of requests a host need to handle decrease.
+To implement the Chord system, first we utilise the consistence hashing with MD5 hashing function on both the node and data to distribute the keys evenly across nodes in the system. Then we sorted the keys in the hash table and create the neighbour table and data’s successor table for each node. After that, we distribute the tables to corresponding node and start up the node in order to serve 3 APIs calls, which are GET, PUT request for data and GET request for neighbours.
 
 \printbibliography
 

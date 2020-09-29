@@ -12,6 +12,8 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {4.2}Implementation}{3}{subsection.4.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5}Future Work}{4}{section.5}%
+\contentsline {section}{\numberline {5}Evaluation and Results}{4}{section.5}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6}Conclusion}{4}{section.6}%
+\contentsline {section}{\numberline {6}Future Work}{5}{section.6}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7}Conclusion}{6}{section.7}%
