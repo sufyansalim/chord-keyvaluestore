@@ -1,7 +1,7 @@
 'use strict'
 
 const autocannon = require('autocannon')
-const port = process.env.KEYS || "";
+const port = process.env.PORT || "";
 
 const data = ['LAKERS','NIGGETS','HEAT','CELTICS','THUNDER','WARRIOES','CLIPPERS','BUCKS']
 

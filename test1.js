@@ -2,7 +2,7 @@
 
 const autocannon = require('autocannon')
 const { v4: uuidv4 } = require('uuid');
-const port = process.env.KEYS || "";
+const port = process.env.PORT || "";
 
 const instance = autocannon({
   title: 'GET Neighbors',
