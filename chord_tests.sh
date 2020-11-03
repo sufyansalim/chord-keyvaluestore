@@ -44,15 +44,18 @@ elif [ "$1" = "putstorageItem" ]; then
   done
 elif [ "$1" = "grow" ]; then
   start=$(date +%s%N)
+  #COUNTER=1
   for l in "${!TEST_ADDRESS[@]}"; do
     if [ ${l} -ne 0 ] && [ ${l} -ne $((${#TEST_ADDRESS[@]}-1)) ]; then
     #if [ ${l} -lt $((${#TEST_ADDRESS[@]}-1)) ]; then
-        ssh -f ${TMP_HOSTNAME[l]} 'curl -X POST '"'http://localhost:${TMP_PORT[l]}/join?nprime=${TMP_HOSTNAME[$((${#TEST_ADDRESS[@]}-1))]}:${TMP_PORT[$((${#TEST_ADDRESS[@]}-1))]}'"''
+        ssh -f ${TMP_HOSTNAME[l]} 'curl -X POST '"'http://localhost:${TMP_PORT[l]}/join?nprime=${TMP_HOSTNAME[l-1]}:${TMP_PORT[l-1]}'"''
     elif [ ${l} == 0 ]; then
         ssh -f ${TMP_HOSTNAME[0]} 'curl -X POST '"'http://localhost:${TMP_PORT[0]}/join?nprime=${TMP_HOSTNAME[0]}:${TMP_PORT[0]}'"''
     elif [ ${l} -eq $((${#TEST_ADDRESS[@]}-1)) ]; then
       ssh -f ${TMP_HOSTNAME[l]} 'curl -X POST '"'http://localhost:${TMP_PORT[l]}/join?nprime=${TMP_HOSTNAME[0]}:${TMP_PORT[0]}&id=${l}'"''
     fi  
+     echo " $COUNTER "
+    #  COUNTER=$[$COUNTER +1]
   done
 elif [ "$1" = "shrink" ]; then
   start=$(date +%s%N)
@@ -74,7 +77,7 @@ elif [ "$1" = "shrink" ]; then
   start=$(date +%s%N)
   for l in "${!TEST_ADDRESS[@]}"; do
       # ssh -f ${TMP_HOSTNAME[l]} 'export ADDRESS='"'${TMP_HOSTNAME[l]}:${TMP_PORT[l]}'"' INDEX='"'${l}'"';node '"'$(pwd)'"'/test4.js'
-      ssh -f ${TMP_HOSTNAME[0]} 'curl -X GET '"'http://localhost:${TMP_PORT[0]}/stability/?myaddress=${${TMP_HOSTNAME[0]}:${TMP_PORT[0]}}&nodeaddress=${${TMP_HOSTNAME[1]}:${TMP_PORT[1]}}&id=${len}'"''  
+      ssh -f ${TMP_HOSTNAME[0]} 'curl -X GET '"'http://localhost:${TMP_PORT[0]}/stability/?myaddress=${${TMP_HOSTNAME[0]}:${TMP_PORT[0]}}&nodeaddress=${${TMP_HOSTNAME[1]}:${TMP_PORT[1]}}&id=${40gi}'"''  
   done
 fi
   end=$((($(date +%s%N) - $start)/1000000))

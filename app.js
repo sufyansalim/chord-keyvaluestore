@@ -381,7 +381,7 @@ app.post(`/join`,async function (req, res) {
 
     let result = await response.json();   
 
-    console.log("1",result)
+    //console.log("1",result)
 
   //Only in edge case set last node succes to 0 node
   if(result.my_id){
@@ -419,7 +419,7 @@ app.post(`/join`,async function (req, res) {
       console.log("prev",result1)
     
       //The current node should be successor of predecessor
-      if(result1 === "Predecessor Updated" && neighbors_addresses.split(' ')[0] === result.prevAdd && neighbors_addresses.split(' ')[1] === result.add){
+      if(result1 === "Predecessor Updated" && neighbors_identified_ids.split(' ')[0] === result.prevId && neighbors_identified_ids.split(' ')[1] === result.id && neighbors_addresses.split(' ')[0] === result.prevAdd && neighbors_addresses.split(' ')[1] === result.add){
         
         return res.status(200).json(" ");
       
