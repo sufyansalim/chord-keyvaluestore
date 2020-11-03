@@ -376,12 +376,12 @@ app.post(`/join`,async function (req, res) {
 
   try {
 
-    //Current node is predecessor of nprime node
+    //Current node is sucessor/predecessor of nprime node
     const response = await fetch(url, options);
 
     let result = await response.json();   
 
-    console.log("1",result)
+    //console.log("1",result)
 
   //Only in edge case set last node succes to 0 node
   if(result.my_id){
@@ -400,15 +400,10 @@ app.post(`/join`,async function (req, res) {
     
     if(result.prevId){
 
-    neighbors = `${result.prevId} ${result.id}`
-    addresses = `${result.prevAdd} ${result.add}`
-    neighbors_identified_ids = neighbors;
-    neighbors_addresses = addresses;
-
       const previous_node_hostname = result.prevAdd.split(":")[0];
       const previous_node_port = result.prevAdd.split(":")[1];
     
-      // console.log(previous_node_hostname,previous_node_port)
+      console.log(previous_node_hostname,previous_node_port)
   
       const url1 = `http://${previous_node_hostname}:${previous_node_port}/update-info/?nextId=${my_id}&nextAdd=${my_address}`;
 
@@ -417,13 +412,37 @@ app.post(`/join`,async function (req, res) {
       let result1 = await response1.json();   
 
       console.log("prev",result1)
-    
+
       //The current node should be successor of predecessor
-      if(result1 === "Predecessor Updated" && neighbors_addresses.split(' ')[0] === result.prevAdd && neighbors_addresses.split(' ')[1] === result.add){
-        
+      if(result1 === "Predecessor Updated"){
+
         return res.status(200).json(" ");
       
-    
+      }
+
+    }
+
+    if(result.nextId){
+
+      const next_node_hostname = result.nextAdd.split(":")[0];
+      const next_node_port = result.nextAdd.split(":")[1];
+
+      console.log(next_node_hostname,next_node_port)
+
+      const url2 = `http://${next_node_hostname}:${next_node_port}/update-info/?prevId=${my_id}&prevAdd=${my_address}`;
+
+      const response2 = await fetch(url2, options);
+  
+      let result2 = await response2.json();
+
+      console.log("succ",result2)
+
+
+      //The current node should be predecessor of successor
+      if( result2 === "Successor Updated"){
+
+        return res.status(200).json(" ");
+
       }
 
     }
@@ -550,6 +569,8 @@ app.post('/add-node', function (req, res) {
 
   const prevId = previous_node_id;
   const prevAdd = previous_node_address;
+  const nextId = next_node_id;
+  const nextAdd = next_node_address;
 
   //Recieve node data
   const data = req.query;
@@ -562,14 +583,21 @@ app.post('/add-node', function (req, res) {
     neighbors_addresses = addresses;
   }
 
-  //Update prev to nodeJoin 
-  if(data.nodeId){
+  //Update prev to nodeJoin if myid > nodeJoinId 
+  if(my_id > data.nodeId){
     neighbors = `${data.nodeId} ${next_node_id}`
     addresses = `${data.nodeAdd} ${next_node_address}`
     neighbors_identified_ids = neighbors;
     neighbors_addresses = addresses;
   } 
 
+   //Update next to nodeJoin if myid < nodeJoinId 
+   if(my_id < data.nodeId){
+    neighbors = `${previous_node_id} ${data.nodeId}`
+    addresses = `${previous_node_address} ${data.nodeAdd}`
+    neighbors_identified_ids = neighbors;
+    neighbors_addresses = addresses;
+  }
 
   if(neighbors_identified_ids.split(' ')[0] === data.nodeId && neighbors_addresses.split(' ')[0] === data.nodeAdd && node_index === data.ind){
 
@@ -579,13 +607,19 @@ app.post('/add-node', function (req, res) {
 
     const previous = {
      prevId,
-     prevAdd,
-     id : my_id,
-     add: my_address
-
+     prevAdd
     }
 
     return res.status(200).json(previous);
+
+  }else if(neighbors_identified_ids.split(' ')[1] === data.nodeId && neighbors_addresses.split(' ')[1] === data.nodeAdd){
+
+    const next = {
+      nextId,
+      nextAdd
+    }
+
+   return res.status(200).json(next);
 
   }
   else {

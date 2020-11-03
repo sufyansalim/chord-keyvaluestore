@@ -1,13 +1,13 @@
 # !/bin/bash -l
 
-if [ $# -lt 1 ]
+if [ $# -lt 2 ]
   then
-    echo "Usage: num_hosts"
+    echo "Usage: start-chord|single-nodes num_hosts"
     exit
 fi
 
 # Use the "generate_hosts" to generate the nodes
-sh generate_hosts.sh $1
+sh generate_hosts.sh $2
 
 # Read the hostfile to store the hostname, port and address for the nodes
 LINE=1
@@ -23,10 +23,12 @@ while read -r NODE
     ((LINE++))
 done < "./hostfile"
 
+
 # Use the address of the node as the key and the hash it
 # The consistence hashing function is implemented inside the "hash_keys.js" file
 # The identifier space is 256-bit
 NODE_IDENTIFIER_IDS_STRING=$(KEYS=${ADDRESSES[*]} node hash_keys.js)
+
 
 # Convert the node identifiers into array 
 NODE_IDENTIFIER_IDS=(${NODE_IDENTIFIER_IDS_STRING// / })
@@ -48,18 +50,29 @@ for i in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
   done
 done
 
+# for each in "${SORTED_HOSTS[@]}"
+# do
+#   echo "$each" host
+# done
+
+# for each in "${SORTED_PORTS[@]}"
+# do
+#   echo "$each" port
+# done
+
 # Store the neighbors for each node identifier
 # After sorting as above, each node identifier will get its previous and next neighbor
 # For node 0, its previous node will be the last node in order to create a ring
 for i in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
   for j in "${!NODE_IDENTIFIER_IDS[@]}"; do
     if [ "${SORTED_NODE_IDENTIFIER_IDS[i]}" = "${NODE_IDENTIFIER_IDS[j]}" ]; then
-      if [ ${i} = 0 ]; then
+      if [ ${i} = 0 ] && [ ${i} ]; then
         NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_NODE_IDENTIFIER_IDS[TOTAL_NODE_IDENTIFIER-1]} ${SORTED_NODE_IDENTIFIER_IDS[${i}+1]}"
         NEIGHBORS_ADDRESSES[i]="${SORTED_ADDRESSES[TOTAL_NODE_IDENTIFIER-1]} ${SORTED_ADDRESSES[${i}+1]}"
       elif [ ${i} = $((TOTAL_NODE_IDENTIFIER-1)) ]; then
         NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_NODE_IDENTIFIER_IDS[${i}-1]} ${SORTED_NODE_IDENTIFIER_IDS[0]}"
         NEIGHBORS_ADDRESSES[i]="${SORTED_ADDRESSES[${i}-1]} ${SORTED_ADDRESSES[0]}"
+        break
       else
         NEIGHBORS_IDENTIFIER_IDS[i]="${SORTED_NODE_IDENTIFIER_IDS[${i}-1]} ${SORTED_NODE_IDENTIFIER_IDS[${i}+1]}"
         NEIGHBORS_ADDRESSES[i]="${SORTED_ADDRESSES[${i}-1]} ${SORTED_ADDRESSES[${i}+1]}"
@@ -67,6 +80,12 @@ for i in "${!SORTED_NODE_IDENTIFIER_IDS[@]}"; do
     fi
   done
 done
+
+for each in "${NEIGHBORS_ADDRESSES[@]}"
+do
+  echo "$each" host
+done
+
 
 # Read the "keysfile" and store the key-value pairs
 # The format of the key-value pairs is in the format [key],[value]
@@ -121,8 +140,22 @@ for j in "${!SORTED_HOSTS[@]}"; do
   echo "${SORTED_HOSTS[j]}:${SORTED_PORTS[j]}"
 done >tmpaddress
 
-# SSH to each node and start the server using "node app.js" command,
-# parameters such as object map are passed as Environment variables into the server in the starting phrase
-for l in "${!SORTED_HOSTS[@]}"; do
-  ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"';node '"'$(pwd)'"'/app.js'
-done
+if [ "$1" = "start-chord" ]; then
+   # SSH to each node and start the server using "node app.js" command,
+   # parameters such as object map are passed as Environment variables into the server in the starting phrase
+      for l in "${!SORTED_HOSTS[@]}"; do
+        ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${NEIGHBORS_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${NEIGHBORS_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"' STATE=false ;node '"'$(pwd)'"'/app.js'
+      done
+elif [ "$1" = "single-nodes" ]; then
+   # SSH to each node and start the server using "node app.js" command,
+   # parameters such as object map are passed as Environment variables into the server in the starting phrase
+      for l in "${!SORTED_HOSTS[@]}"; do
+        ssh -f ${SORTED_HOSTS[l]} 'export PORT='"'${SORTED_PORTS[l]}'"' NEIGHBORS_IDENTIFIER_IDS='"'${SORTED_NODE_IDENTIFIER_IDS[l]} ${SORTED_NODE_IDENTIFIER_IDS[l]}'"' NEIGHBORS_ADDRESSES='"'${SORTED_ADDRESSES[l]} ${SORTED_ADDRESSES[l]}'"' OBJECT_MAP='"'${OBJECT_MAP[l]}'"' INDEX='"'${l}'"' MY_ID='"'${SORTED_NODE_IDENTIFIER_IDS[l]}'"' STATE=false ;node '"'$(pwd)'"'/app.js'
+      done
+fi
+
+
+# for each in "${SORTED_PORTS[@]}"
+# do
+#   echo "$each" port
+# done
