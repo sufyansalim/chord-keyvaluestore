@@ -1,4 +1,4 @@
-# This is an Iplementation of the Chord Paper in JavaScript
+# This is an Implementation of the Chord Paper in JavaScript
 
 ```
 Chord: A scalable peer-to-peer lookup service for internet applications
