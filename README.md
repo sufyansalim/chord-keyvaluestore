@@ -1,3 +1,10 @@
+# This is an Iplementation of the Chord Paper in JavaScript
+
+```
+Chord: A scalable peer-to-peer lookup service for internet applications
+```
+[paper](https://dl.acm.org/doi/10.1145/964723.383071)
+
 How to compile and run the code:
 
 Download NVM:
