@@ -20,9 +20,6 @@ LINE=1
 
 len=$((${#TEST_ADDRESS[*]}-1))
 echo "len: $len"
-#length = len
-# length= $(${TEST_ADDRESS[-1]})
-# echo "lenth: $length"
 
 if [ "$1" = "getNeighbors" ]; then
  for l in "${!TEST_ADDRESS[@]}"; do
@@ -77,7 +74,7 @@ elif [ "$1" = "shrink" ]; then
   start=$(date +%s%N)
   for l in "${!TEST_ADDRESS[@]}"; do
       # ssh -f ${TMP_HOSTNAME[l]} 'export ADDRESS='"'${TMP_HOSTNAME[l]}:${TMP_PORT[l]}'"' INDEX='"'${l}'"';node '"'$(pwd)'"'/test4.js'
-      ssh -f ${TMP_HOSTNAME[0]} 'curl -X GET '"'http://localhost:${TMP_PORT[0]}/stability/?myaddress=${${TMP_HOSTNAME[0]}:${TMP_PORT[0]}}&nodeaddress=${${TMP_HOSTNAME[1]}:${TMP_PORT[1]}}&id=${40}'"''  
+      ssh -f ${TMP_HOSTNAME[0]} 'curl -X POST '"'http://localhost:${TMP_PORT[0]}/stability/?myaddress=${${TMP_HOSTNAME[0]}:${TMP_PORT[0]}}&nodeaddress=${${TMP_ADDRESS[1]}}}'"''  
   done
 fi
   end=$((($(date +%s%N) - $start)/1000000))

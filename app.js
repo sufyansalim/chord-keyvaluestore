@@ -651,14 +651,15 @@ app.post('/update-info', function (req, res) {
 });
 
 // Get Stability called in chord tests to check stability of network
-app.get('/stability', async function (req, res) {
+app.post('/stability', async function (req, res) {
 
   const next_node_address = neighbors_addresses.split(" ")[1];
   const next_node_hostname = next_node_address.split(":")[0];
   const next_node_port = next_node_address.split(":")[1];
   const myAdd = req.query.myaddress;
   const nAdd = req.query.nodeaddress;
-  const index = req.query.id;
+  //const idx = req.query.id;
+  const index = 40;
   const address = nAdd.split(":")
   const myaddress = myAdd.split(":")
   let url;
@@ -667,17 +668,6 @@ app.get('/stability', async function (req, res) {
 
   console.log("ADD",address,"MAdd",my_address);
 
- 
-
-    //Info of node
-    const info = {
-      node_key : my_id ,
-      successor : next_node_address ,
-      others:[
-       previous_node_address
-     ],
-     sim_crash : state
-   }
 
 
         try {
